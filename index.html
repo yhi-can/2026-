@@ -84,7 +84,7 @@
             flex-direction: column;
             gap: 8px;
             min-height: 0;
-            padding-bottom: 12px; /* 底邊留出空間避免難按 */
+            padding-bottom: 12px;
         }
 
         .pos-keys {
@@ -161,14 +161,14 @@
         .btn-jelly { border-color: #2ecc71; }
         .btn-jelly .qty { color: #2ecc71; }
 
-        /* 左下角數字鍵盤區塊：加大按鈕 + 提高位置 */
+        /* 左下角數字鍵盤區塊 */
         .numpad-container {
             background: var(--card-bg);
             border-radius: 10px;
             padding: 10px;
             border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
-            margin-bottom: 8px; /* 向上抬高，遠離底邊 */
+            margin-bottom: 8px;
         }
 
         .numpad-header {
@@ -191,8 +191,8 @@
             color: white;
             border: 1px solid #4f546c;
             border-radius: 8px;
-            padding: 14px 0; /* 加大垂直點擊範圍 */
-            font-size: 22px; /* 字體加大 */
+            padding: 14px 0;
+            font-size: 22px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
@@ -352,16 +352,94 @@
             box-shadow: 0 3px 8px rgba(46, 204, 113, 0.4);
         }
 
+        /* 彈窗遮罩通用 */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.85);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 100;
         }
 
+        /* 結帳找零專用加大彈窗 */
+        .success-modal-content {
+            background: #282a36;
+            width: 85%;
+            max-width: 550px;
+            border-radius: 20px;
+            padding: 25px 30px;
+            text-align: center;
+            border: 3px solid #2ecc71;
+            box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+            animation: popIn 0.2s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .success-modal-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2ecc71;
+            margin-bottom: 20px;
+        }
+
+        .success-detail-box {
+            background: #1e2029;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .success-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 24px;
+            color: #dcdde1;
+        }
+
+        .success-row.change-highlight {
+            border-top: 2px dashed #485460;
+            padding-top: 15px;
+            margin-top: 5px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .success-row.change-highlight .val {
+            font-size: 48px;
+            color: #f1c40f; /* 醒目黃色超大字體 */
+            font-weight: 900;
+        }
+
+        .close-success-btn {
+            width: 100%;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 0;
+            font-size: 26px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+        }
+
+        .close-success-btn:active {
+            background: #27ae60;
+            transform: scale(0.98);
+        }
+
+        /* 報表彈窗 */
         .modal-content {
             background: var(--card-bg);
             width: 90%;
@@ -543,7 +621,7 @@
                 </div>
             </div>
 
-            <!-- 數字鍵盤：加大按鈕高度與字體 -->
+            <!-- 數字鍵盤 -->
             <div class="numpad-container">
                 <div class="numpad-header">
                     <span>🔢 現金輸入鍵盤</span>
@@ -603,7 +681,31 @@
         </div>
     </div>
 
-    <!-- 報表彈窗 -->
+    <!-- 超大結帳成功 / 找零彈窗 -->
+    <div class="modal-overlay" id="checkout-modal">
+        <div class="success-modal-content">
+            <div class="success-modal-title">🎉 結帳完成</div>
+            
+            <div class="success-detail-box">
+                <div class="success-row">
+                    <span>應收總額：</span>
+                    <span>$<span id="modal-total">0</span></span>
+                </div>
+                <div class="success-row">
+                    <span>實收金額：</span>
+                    <span>$<span id="modal-paid">0</span></span>
+                </div>
+                <div class="success-row change-highlight">
+                    <span>找零金額：</span>
+                    <span class="val">$<span id="modal-change">0</span></span>
+                </div>
+            </div>
+
+            <button class="close-success-btn" onclick="closeCheckoutModal()">完成 / 下一筆交易</button>
+        </div>
+    </div>
+
+    <!-- 當日統計報表彈窗 -->
     <div class="modal-overlay" id="report-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -748,6 +850,8 @@
                 }
             }
 
+            const change = paid >= total ? paid - total : 0;
+
             salesData.totalRevenue += total;
             salesData.totalOrders += 1;
 
@@ -760,7 +864,16 @@
             });
 
             localStorage.setItem('pos_sales_data', JSON.stringify(salesData));
-            alert(`✅ 結帳成功！\n總金額：$${total}\n找零：$${paid >= total ? paid - total : 0}`);
+
+            // 顯示超大找零彈窗
+            document.getElementById('modal-total').innerText = total;
+            document.getElementById('modal-paid').innerText = paid;
+            document.getElementById('modal-change').innerText = change;
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').style.display = 'none';
             clearCart();
         }
 

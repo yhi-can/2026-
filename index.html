@@ -123,6 +123,12 @@
             gap: 6px;
         }
 
+        .key-grid-5 {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+
         .key-btn {
             background: #343746;
             border: 2px solid transparent;
@@ -425,7 +431,7 @@
         }
 
         .change-val {
-            font-size: 80px; /* 超大巨無霸數字 */
+            font-size: 80px;
             color: #f1c40f;
             font-weight: 900;
             line-height: 1;
@@ -539,7 +545,7 @@
         @media (max-width: 600px) {
             html, body { overflow: auto; height: auto; }
             .main-container { flex-direction: column; }
-            .key-grid { grid-template-columns: repeat(2, 1fr); }
+            .key-grid, .key-grid-5 { grid-template-columns: repeat(2, 1fr); }
             .change-val { font-size: 60px; }
         }
     </style>
@@ -561,7 +567,7 @@
                         <span>🍰 千層蛋糕</span>
                         <small>組合優惠</small>
                     </div>
-                    <div class="key-grid">
+                    <div class="key-grid-5">
                         <button class="key-btn btn-cake" onclick="addToCart('千層蛋糕 (1片)', 80)">
                             <span class="qty">1片</span>
                             <span class="price">$80</span>
@@ -577,6 +583,10 @@
                         <button class="key-btn btn-cake" onclick="addToCart('千層蛋糕 (6片)', 420)">
                             <span class="qty">6片</span>
                             <span class="price">$420</span>
+                        </button>
+                        <button class="key-btn btn-cake" onclick="addToCart('千層蛋糕 (12片)', 800)">
+                            <span class="qty">12片</span>
+                            <span class="price">$800</span>
                         </button>
                     </div>
                 </div>

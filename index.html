@@ -26,7 +26,7 @@
 
         html, body {
             margin: 0;
-            padding: 8px 8px 24px 8px; /* 增加底部留白，避免平板手勢列遮擋 */
+            padding: 8px 8px 50px 8px; /* 大幅增加底部留白，將整體介面向上推 */
             background-color: var(--primary-bg);
             color: var(--text-main);
             height: 100vh;
@@ -76,6 +76,7 @@
             flex: 1;
             gap: 10px;
             min-height: 0;
+            margin-bottom: 10px; /* 增加主容器底部邊界，拉開下方距離 */
         }
 
         .pos-left {
@@ -166,32 +167,34 @@
         .btn-jelly { border-color: #2ecc71; }
         .btn-jelly .qty { color: #2ecc71; }
 
+        /* 數字鍵盤區塊：向上拉提並緊湊化 */
         .numpad-container {
             background: var(--card-bg);
             border-radius: 10px;
-            padding: 8px 10px;
+            padding: 6px 10px 8px 10px;
             border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
+            margin-bottom: 5px; /* 上移控制邊界 */
         }
 
         .numpad-header {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             color: var(--accent-orange);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        /* 放大版的清除折扣按鈕 */
+        /* 清除折扣按鈕 */
         .reset-discount-link {
             background: #c0392b;
             color: #ffffff;
             border: 1px solid #e74c3c;
-            font-size: 15px;
+            font-size: 13px;
             font-weight: bold;
-            padding: 4px 12px;
+            padding: 2px 10px;
             border-radius: 6px;
             cursor: pointer;
             transition: background 0.2s;
@@ -205,7 +208,7 @@
         .numpad-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
+            gap: 5px;
         }
 
         .num-btn {
@@ -213,8 +216,8 @@
             color: white;
             border: 1px solid #4f546c;
             border-radius: 8px;
-            padding: 12px 0; /* 高度維持 */
-            font-size: 20px;
+            padding: 10px 0; /* 稍微縮減內距使鍵盤上抬 */
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
@@ -227,21 +230,21 @@
             background: #273c75;
             color: #00d2d3;
             border-color: #487eb0;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .num-btn.discount-fixed {
             background: #d35400;
             color: #ffffff;
             border-color: #e67e22;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .num-btn.discount-percent {
             background: #2980b9;
             color: #ffffff;
             border-color: #3498db;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .num-btn.danger {
@@ -305,6 +308,7 @@
             cursor: pointer;
         }
 
+        /* 應收總額與結帳區塊：整體上移調整 */
         .checkout-section {
             background: #1e2029;
             border-radius: 8px;
@@ -313,6 +317,7 @@
             flex-direction: column;
             gap: 4px;
             flex-shrink: 0;
+            margin-bottom: 4px; /* 與底部的邊界控制 */
         }
 
         .row {
@@ -369,7 +374,7 @@
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 12px 6px;
+            padding: 10px 6px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
@@ -380,7 +385,7 @@
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 12px 6px;
+            padding: 10px 6px;
             font-size: 20px;
             font-weight: bold;
             cursor: pointer;
@@ -510,7 +515,7 @@
             border-radius: 8px;
             margin-bottom: 12px;
             display: flex;
-            justify-content: space-around;
+            justify-style: space-around;
             text-align: center;
         }
 

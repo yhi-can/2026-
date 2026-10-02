@@ -26,7 +26,7 @@
 
         html, body {
             margin: 0;
-            padding: 8px;
+            padding: 8px 8px 24px 8px; /* 增加底部留白，避免平板手勢列遮擋 */
             background-color: var(--primary-bg);
             color: var(--text-main);
             height: 100vh;
@@ -41,7 +41,7 @@
 
         header {
             background: linear-gradient(135deg, #4a154b, #2b082e);
-            padding: 8px 12px;
+            padding: 6px 12px;
             border-radius: 8px;
             display: flex;
             justify-content: space-between;
@@ -82,9 +82,8 @@
             flex: 3;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             min-height: 0;
-            padding-bottom: 12px;
         }
 
         .pos-keys {
@@ -170,17 +169,16 @@
         .numpad-container {
             background: var(--card-bg);
             border-radius: 10px;
-            padding: 10px;
+            padding: 8px 10px;
             border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
-            margin-bottom: 8px;
         }
 
         .numpad-header {
             font-size: 14px;
             font-weight: bold;
             color: var(--accent-orange);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -193,7 +191,7 @@
             border: 1px solid #e74c3c;
             font-size: 15px;
             font-weight: bold;
-            padding: 6px 14px;
+            padding: 4px 12px;
             border-radius: 6px;
             cursor: pointer;
             transition: background 0.2s;
@@ -215,7 +213,7 @@
             color: white;
             border: 1px solid #4f546c;
             border-radius: 8px;
-            padding: 12px 0; /* 高度保持不變 */
+            padding: 12px 0; /* 高度維持 */
             font-size: 20px;
             font-weight: bold;
             cursor: pointer;
@@ -267,7 +265,7 @@
             font-size: 15px;
             font-weight: bold;
             color: var(--accent-orange);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             padding-bottom: 4px;
             border-bottom: 1px solid #3d4153;
             display: flex;
@@ -278,7 +276,7 @@
         .cart-items {
             flex: 1;
             overflow-y: auto;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             min-height: 40px;
         }
 
@@ -287,7 +285,7 @@
             justify-content: space-between;
             align-items: center;
             background: #343746;
-            padding: 8px;
+            padding: 6px 8px;
             border-radius: 6px;
             margin-bottom: 6px;
         }
@@ -310,10 +308,10 @@
         .checkout-section {
             background: #1e2029;
             border-radius: 8px;
-            padding: 10px 12px;
+            padding: 8px 12px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             flex-shrink: 0;
         }
 
@@ -321,7 +319,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .discount-row {
@@ -329,21 +327,21 @@
             font-weight: bold;
             font-size: 14px;
             border-top: 1px dashed #3d4153;
-            padding-top: 4px;
+            padding-top: 2px;
         }
 
         .total-row {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
             color: #f1c40f;
             border-bottom: 2px dashed #3d4153;
-            padding-bottom: 6px;
-            margin-bottom: 4px;
+            padding-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .paid-input {
-            width: 130px;
-            font-size: 22px;
+            width: 120px;
+            font-size: 20px;
             font-weight: bold;
             text-align: right;
             padding: 2px 6px;
@@ -354,7 +352,7 @@
         }
 
         .change-row {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #2ecc71;
         }
@@ -362,8 +360,8 @@
         .action-btns {
             display: grid;
             grid-template-columns: 1fr 2fr;
-            gap: 10px;
-            margin-top: 6px;
+            gap: 8px;
+            margin-top: 4px;
         }
 
         .clear-btn {
@@ -371,7 +369,7 @@
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 14px 6px;
+            padding: 12px 6px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
@@ -382,8 +380,8 @@
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 14px 6px;
-            font-size: 22px;
+            padding: 12px 6px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 3px 8px rgba(46, 204, 113, 0.4);
@@ -722,7 +720,8 @@
                     <button class="num-btn" onclick="pressNum('0')">0</button>
                     <button class="num-btn" onclick="pressNum('00')">00</button>
                     <button class="num-btn" style="visibility: hidden; pointer-events: none;"></button>
-                    <button class="num-btn quick" style="grid-column: span 2;" onclick="setQuickPaid(1000)">$1000 現金結帳</button>
+                    <button class="num-btn" style="visibility: hidden; pointer-events: none;"></button>
+                    <button class="num-btn quick" onclick="setQuickPaid(1000)">$1000</button>
                 </div>
             </div>
         </div>

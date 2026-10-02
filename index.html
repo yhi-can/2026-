@@ -26,7 +26,7 @@
 
         html, body {
             margin: 0;
-            padding: 8px 8px 50px 8px; /* 大幅增加底部留白，將整體介面向上推 */
+            padding: 8px 8px 50px 8px; /* 保留底部留白 */
             background-color: var(--primary-bg);
             color: var(--text-main);
             height: 100vh;
@@ -76,7 +76,7 @@
             flex: 1;
             gap: 10px;
             min-height: 0;
-            margin-bottom: 10px; /* 增加主容器底部邊界，拉開下方距離 */
+            margin-bottom: 10px;
         }
 
         .pos-left {
@@ -167,48 +167,58 @@
         .btn-jelly { border-color: #2ecc71; }
         .btn-jelly .qty { color: #2ecc71; }
 
-        /* 數字鍵盤區塊：向上拉提並緊湊化 */
+        /* 數字鍵盤區塊 */
         .numpad-container {
             background: var(--card-bg);
             border-radius: 10px;
-            padding: 6px 10px 8px 10px;
+            padding: 8px 10px;
             border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
-            margin-bottom: 5px; /* 上移控制邊界 */
-        }
-
-        .numpad-header {
-            font-size: 13px;
-            font-weight: bold;
-            color: var(--accent-orange);
-            margin-bottom: 4px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 6px;
         }
 
-        /* 清除折扣按鈕 */
-        .reset-discount-link {
-            background: #c0392b;
-            color: #ffffff;
-            border: 1px solid #e74c3c;
+        /* 頂部折扣操作列 (高度稍低) */
+        .discount-row-top {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+        }
+
+        .btn-discount {
+            padding: 4px 0; /* 按鍵高度較低 */
             font-size: 13px;
             font-weight: bold;
-            padding: 2px 10px;
             border-radius: 6px;
             cursor: pointer;
-            transition: background 0.2s;
+            text-align: center;
+            border: 1px solid transparent;
         }
 
-        .reset-discount-link:active {
-            background: #e74c3c;
+        .btn-discount-fixed {
+            background: #d35400;
+            color: #ffffff;
+            border-color: #e67e22;
         }
 
-        /* 統一五欄位鍵盤網格 */
+        .btn-discount-percent {
+            background: #2980b9;
+            color: #ffffff;
+            border-color: #3498db;
+        }
+
+        .btn-discount-clear {
+            background: #c0392b;
+            color: #ffffff;
+            border-color: #e74c3c;
+        }
+
+        /* 放大版的數字鍵盤 (3欄位) */
         .numpad-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
         }
 
         .num-btn {
@@ -216,36 +226,16 @@
             color: white;
             border: 1px solid #4f546c;
             border-radius: 8px;
-            padding: 10px 0; /* 稍微縮減內距使鍵盤上抬 */
-            font-size: 18px;
+            padding: 14px 0; /* 放大內距 */
+            font-size: 24px; /* 數字大幅放大 */
             font-weight: bold;
             cursor: pointer;
             text-align: center;
             width: 100%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .num-btn:active { background: #575c75; }
-
-        .num-btn.quick {
-            background: #273c75;
-            color: #00d2d3;
-            border-color: #487eb0;
-            font-size: 14px;
-        }
-
-        .num-btn.discount-fixed {
-            background: #d35400;
-            color: #ffffff;
-            border-color: #e67e22;
-            font-size: 14px;
-        }
-
-        .num-btn.discount-percent {
-            background: #2980b9;
-            color: #ffffff;
-            border-color: #3498db;
-            font-size: 14px;
-        }
 
         .num-btn.danger {
             background: #833471;
@@ -308,7 +298,6 @@
             cursor: pointer;
         }
 
-        /* 應收總額與結帳區塊：整體上移調整 */
         .checkout-section {
             background: #1e2029;
             border-radius: 8px;
@@ -317,7 +306,7 @@
             flex-direction: column;
             gap: 4px;
             flex-shrink: 0;
-            margin-bottom: 4px; /* 與底部的邊界控制 */
+            margin-bottom: 4px;
         }
 
         .row {
@@ -594,7 +583,6 @@
             html, body { overflow: auto; height: auto; }
             .main-container { flex-direction: column; }
             .key-grid, .key-grid-5 { grid-template-columns: repeat(2, 1fr); }
-            .numpad-grid { grid-template-columns: repeat(3, 1fr); }
             .change-val { font-size: 60px; }
         }
     </style>
@@ -693,40 +681,32 @@
                 </div>
             </div>
 
-            <!-- 數字與折扣鍵盤 -->
+            <!-- 數字與折扣鍵盤容器 -->
             <div class="numpad-container">
-                <div class="numpad-header">
-                    <span>🔢 數字與折扣鍵盤</span>
-                    <button class="reset-discount-link" onclick="clearDiscount()">清除折扣 ✕</button>
+                <!-- 頂部折扣控制列 (高度較低) -->
+                <div class="discount-row-top">
+                    <button class="btn-discount btn-discount-fixed" onclick="applyNumpadFixedDiscount()">按金額扣</button>
+                    <button class="btn-discount btn-discount-percent" onclick="applyNumpadPercentDiscount()">按趴數折</button>
+                    <button class="btn-discount btn-discount-clear" onclick="clearDiscount()">清除折扣 ✕</button>
                 </div>
+
+                <!-- 大字體 3×4 數字鍵盤 Grid -->
                 <div class="numpad-grid">
-                    <!-- 第一排 -->
                     <button class="num-btn" onclick="pressNum('7')">7</button>
                     <button class="num-btn" onclick="pressNum('8')">8</button>
                     <button class="num-btn" onclick="pressNum('9')">9</button>
-                    <button class="num-btn discount-fixed" onclick="applyNumpadFixedDiscount()">按金額扣</button>
-                    <button class="num-btn quick" onclick="setExactAmount()">剛好</button>
 
-                    <!-- 第二排 -->
                     <button class="num-btn" onclick="pressNum('4')">4</button>
                     <button class="num-btn" onclick="pressNum('5')">5</button>
                     <button class="num-btn" onclick="pressNum('6')">6</button>
-                    <button class="num-btn discount-percent" onclick="applyNumpadPercentDiscount()">按趴數折</button>
-                    <button class="num-btn quick" onclick="setQuickPaid(100)">$100</button>
 
-                    <!-- 第三排 -->
                     <button class="num-btn" onclick="pressNum('1')">1</button>
                     <button class="num-btn" onclick="pressNum('2')">2</button>
                     <button class="num-btn" onclick="pressNum('3')">3</button>
-                    <button class="num-btn danger" onclick="pressNum('back')">⌫</button>
-                    <button class="num-btn quick" onclick="setQuickPaid(500)">$500</button>
 
-                    <!-- 第四排 -->
                     <button class="num-btn" onclick="pressNum('0')">0</button>
                     <button class="num-btn" onclick="pressNum('00')">00</button>
-                    <button class="num-btn" style="visibility: hidden; pointer-events: none;"></button>
-                    <button class="num-btn" style="visibility: hidden; pointer-events: none;"></button>
-                    <button class="num-btn quick" onclick="setQuickPaid(1000)">$1000</button>
+                    <button class="num-btn danger" onclick="pressNum('back')">⌫</button>
                 </div>
             </div>
         </div>
@@ -820,7 +800,7 @@
 
     <script>
         let cart = [];
-        let currentDiscount = 0; // 當前折抵金額
+        let currentDiscount = 0;
 
         let salesData = JSON.parse(localStorage.getItem('pos_sales_data_v2')) || {
             transactions: []
@@ -860,7 +840,6 @@
                 cartItemsContainer.appendChild(div);
             });
 
-            // 計算最終總價
             let finalTotal = subtotal - currentDiscount;
             if (finalTotal < 0) finalTotal = 0;
 
@@ -892,7 +871,6 @@
             updateCartUI();
         }
 
-        /* 鍵盤連動折扣邏輯 */
         function applyNumpadFixedDiscount() {
             const subtotal = parseInt(document.getElementById('subtotal-amount').innerText) || 0;
             const inputValue = parseInt(document.getElementById('paid-amount').value) || 0;
@@ -903,7 +881,7 @@
             }
 
             if (inputValue <= 0) {
-                alert("請先在鍵盤輸入要折抵的金額！\n（例如輸入 30 後點擊「按金額扣」）");
+                alert("請先在數字鍵盤輸入要折抵的金額！\n（例如輸入 30 後點擊「按金額扣」）");
                 return;
             }
 
@@ -913,7 +891,7 @@
             }
 
             currentDiscount = inputValue;
-            document.getElementById('paid-amount').value = ''; // 清空輸入欄以供現金結帳
+            document.getElementById('paid-amount').value = '';
             updateCartUI();
         }
 
@@ -927,7 +905,7 @@
             }
 
             if (inputValue <= 0 || inputValue >= 100) {
-                alert("請先在鍵盤輸入正確趴數！\n（例如：9折輸入 9、85折輸入 85，然後點擊「按趴數折」）");
+                alert("請先在數字鍵盤輸入正確趴數！\n（例如：9折輸入 9、85折輸入 85，然後點擊「按趴數折」）");
                 return;
             }
 
@@ -935,7 +913,7 @@
             const finalPrice = Math.round(subtotal * rate);
             currentDiscount = subtotal - finalPrice;
 
-            document.getElementById('paid-amount').value = ''; // 清空輸入欄以供現金結帳
+            document.getElementById('paid-amount').value = '';
             updateCartUI();
         }
 
@@ -953,17 +931,6 @@
             } else {
                 paidInput.value = current + val;
             }
-            calculateChange();
-        }
-
-        function setQuickPaid(amount) {
-            document.getElementById('paid-amount').value = amount;
-            calculateChange();
-        }
-
-        function setExactAmount() {
-            const total = document.getElementById('total-amount').innerText;
-            document.getElementById('paid-amount').value = total;
             calculateChange();
         }
 
@@ -1001,7 +968,6 @@
             const now = new Date();
             const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
 
-            // 新增單筆交易紀錄
             const newTransaction = {
                 id: 'TX' + Date.now().toString().slice(-6),
                 time: timeStr,
@@ -1016,7 +982,6 @@
             salesData.transactions.unshift(newTransaction);
             localStorage.setItem('pos_sales_data_v2', JSON.stringify(salesData));
 
-            // 顯示巨型找零彈窗
             document.getElementById('modal-total').innerText = total;
             document.getElementById('modal-paid').innerText = paid;
             document.getElementById('modal-change').innerText = change;

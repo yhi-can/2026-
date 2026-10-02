@@ -60,6 +60,22 @@
             gap: 6px;
         }
 
+        .header-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .discount-btn {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
         .report-btn {
             background: #8e44ad;
             color: white;
@@ -287,11 +303,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 16px;
+            font-size: 15px;
+        }
+
+        .discount-row {
+            color: #e67e22;
+            font-weight: bold;
+            font-size: 14px;
+            border-top: 1px dashed #3d4153;
+            padding-top: 4px;
         }
 
         .total-row {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
             color: #f1c40f;
             border-bottom: 2px dashed #3d4153;
@@ -545,6 +569,30 @@
             cursor: pointer;
         }
 
+        /* 折扣選單樣式 */
+        .discount-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .discount-opt-btn {
+            background: #343746;
+            color: white;
+            border: 2px solid #e67e22;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .discount-opt-btn:hover {
+            background: #e67e22;
+        }
+
         @media (max-width: 600px) {
             html, body { overflow: auto; height: auto; }
             .main-container { flex-direction: column; }
@@ -557,7 +605,10 @@
 
     <header>
         <h1>🎃 塔吉特夢想派對 POS</h1>
-        <button class="report-btn" onclick="openReport()">📜 當日交易明細 / 報表</button>
+        <div class="header-btns">
+            <button class="discount-btn" onclick="openDiscountModal()">🏷️ 折價 / 折扣</button>
+            <button class="report-btn" onclick="openReport()">📜 交易明細</button>
+        </div>
     </header>
 
     <div class="main-container">
@@ -687,8 +738,16 @@
             <div class="cart-items" id="cart-items"></div>
 
             <div class="checkout-section">
+                <div class="row">
+                    <span>小計 (原價)</span>
+                    <span>$<span id="subtotal-amount">0</span></span>
+                </div>
+                <div class="row discount-row" id="discount-display-row" style="display: none;">
+                    <span>折價扣除</span>
+                    <span>-$<span id="discount-amount">0</span></span>
+                </div>
                 <div class="row total-row">
-                    <span>總金額</span>
+                    <span>應收總額</span>
                     <span>$<span id="total-amount">0</span></span>
                 </div>
                 <div class="row">
@@ -731,6 +790,22 @@
         </div>
     </div>
 
+    <!-- 折扣選擇彈窗 -->
+    <div class="modal-overlay" id="discount-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏷️ 設定購物車折扣</h2>
+                <button class="close-modal" onclick="closeDiscountModal()">✕</button>
+            </div>
+            
+            <div class="discount-options">
+                <button class="discount-opt-btn" onclick="applyPercentageDiscount()">1. 整單打折（例如：9折 輸入 9 / 85折 輸入 85）</button>
+                <button class="discount-opt-btn" onclick="applyFixedDiscount()">2. 直接折抵金額（例如：折 50 元）</button>
+                <button class="discount-opt-btn" style="border-color: #e74c3c; color: #ff7979;" onclick="clearDiscount()">3. 清除折扣（恢復原價）</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 當日交易明細報表彈窗 -->
     <div class="modal-overlay" id="report-modal">
         <div class="modal-content">
@@ -758,7 +833,8 @@
 
     <script>
         let cart = [];
-        // 交易資料庫：包含獨立交易陣列 transactions
+        let currentDiscount = 0; // 當前折抵金額
+
         let salesData = JSON.parse(localStorage.getItem('pos_sales_data_v2')) || {
             transactions: []
         };
@@ -777,12 +853,12 @@
             const cartItemsContainer = document.getElementById('cart-items');
             cartItemsContainer.innerHTML = '';
             
-            let total = 0;
+            let subtotal = 0;
             let totalQty = 0;
 
             cart.forEach((item, index) => {
                 const itemTotal = item.price * item.qty;
-                total += itemTotal;
+                subtotal += itemTotal;
                 totalQty += item.qty;
 
                 const div = document.createElement('div');
@@ -797,19 +873,96 @@
                 cartItemsContainer.appendChild(div);
             });
 
-            document.getElementById('total-amount').innerText = total;
+            // 計算最終總價
+            let finalTotal = subtotal - currentDiscount;
+            if (finalTotal < 0) finalTotal = 0;
+
+            document.getElementById('subtotal-amount').innerText = subtotal;
             document.getElementById('item-count').innerText = `${totalQty} 項`;
+
+            const discountRow = document.getElementById('discount-display-row');
+            if (currentDiscount > 0) {
+                discountRow.style.display = 'flex';
+                document.getElementById('discount-amount').innerText = currentDiscount;
+            } else {
+                discountRow.style.display = 'none';
+            }
+
+            document.getElementById('total-amount').innerText = finalTotal;
             calculateChange();
         }
 
         function removeItem(index) {
             cart.splice(index, 1);
+            if (cart.length === 0) currentDiscount = 0;
             updateCartUI();
         }
 
         function clearCart() {
             cart = [];
+            currentDiscount = 0;
             document.getElementById('paid-amount').value = '';
+            updateCartUI();
+        }
+
+        /* 折扣相關邏輯 */
+        function openDiscountModal() {
+            if (cart.length === 0) {
+                alert('購物車是空的，請先加入商品再設定折扣！');
+                return;
+            }
+            document.getElementById('discount-modal').style.display = 'flex';
+        }
+
+        function closeDiscountModal() {
+            document.getElementById('discount-modal').style.display = 'none';
+        }
+
+        function applyPercentageDiscount() {
+            const subtotal = parseInt(document.getElementById('subtotal-amount').innerText) || 0;
+            const input = prompt("請輸入折扣趴數（例如：9 折輸入 9、85 折輸入 85）：", "9");
+            
+            if (input === null) return;
+            const discountNum = parseFloat(input);
+
+            if (isNaN(discountNum) || discountNum <= 0 || discountNum >= 100) {
+                alert("請輸入有效的折扣數字（1-99 之間）！");
+                return;
+            }
+
+            let rate = discountNum < 10 ? discountNum / 10 : discountNum / 100;
+            const finalPrice = Math.round(subtotal * rate);
+            currentDiscount = subtotal - finalPrice;
+
+            closeDiscountModal();
+            updateCartUI();
+        }
+
+        function applyFixedDiscount() {
+            const subtotal = parseInt(document.getElementById('subtotal-amount').innerText) || 0;
+            const input = prompt(`目前小計 $${subtotal}，請輸入要直接扣除的折抵金額 ($)：`, "50");
+
+            if (input === null) return;
+            const discountVal = parseInt(input);
+
+            if (isNaN(discountVal) || discountVal <= 0) {
+                alert("請輸入有效的折抵金額！");
+                return;
+            }
+
+            if (discountVal > subtotal) {
+                alert(`折抵金額不能大於小擊金額 ($${subtotal})！`);
+                return;
+            }
+
+            currentDiscount = discountVal;
+            closeDiscountModal();
+            updateCartUI();
+        }
+
+        function clearDiscount() {
+            currentDiscount = 0;
+            closeDiscountModal();
             updateCartUI();
         }
 
@@ -874,14 +1027,15 @@
             const newTransaction = {
                 id: 'TX' + Date.now().toString().slice(-6),
                 time: timeStr,
-                items: JSON.parse(JSON.stringify(cart)), // 深拷貝
+                items: JSON.parse(JSON.stringify(cart)),
+                discount: currentDiscount,
                 totalAmount: total,
                 paidAmount: paid,
                 changeAmount: change,
                 isVoided: false
             };
 
-            salesData.transactions.unshift(newTransaction); // 新訂單排在最前
+            salesData.transactions.unshift(newTransaction);
             localStorage.setItem('pos_sales_data_v2', JSON.stringify(salesData));
 
             // 顯示巨型找零彈窗
@@ -913,6 +1067,7 @@
                     }
 
                     const itemsSummary = tx.items.map(i => `${i.name} x${i.qty}`).join('、');
+                    const discountInfo = tx.discount > 0 ? ` (折價 -$${tx.discount})` : '';
 
                     const div = document.createElement('div');
                     div.className = `transaction-card ${tx.isVoided ? 'voided' : ''}`;
@@ -921,7 +1076,7 @@
                             <span class="tx-id">單號：${tx.id} ${tx.isVoided ? '[已作廢]' : ''}</span>
                             <span class="tx-time">${tx.time}</span>
                         </div>
-                        <div class="tx-items">${itemsSummary}</div>
+                        <div class="tx-items">${itemsSummary} ${discountInfo}</div>
                         <div class="tx-footer">
                             <span class="tx-amount">金額：$${tx.totalAmount}</span>
                             ${!tx.isVoided ? `<button class="void-btn" onclick="voidTransaction('${tx.id}')">🗑️ 作廢此單</button>` : '<span style="color:#e74c3c; font-size:12px;">已退單</span>'}
@@ -943,7 +1098,7 @@
             if (confirm(`確定要作廢單號【${tx.id}】金額 $${tx.totalAmount} 的這筆交易嗎？\n作廢後該筆金額將自動從今日總額扣除。`)) {
                 tx.isVoided = true;
                 localStorage.setItem('pos_sales_data_v2', JSON.stringify(salesData));
-                openReport(); // 刷新畫面與統計
+                openReport();
             }
         }
 

@@ -180,12 +180,30 @@
             font-size: 14px;
             font-weight: bold;
             color: var(--accent-orange);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
+        /* 放大版的清除折扣按鈕 */
+        .reset-discount-link {
+            background: #c0392b;
+            color: #ffffff;
+            border: 1px solid #e74c3c;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .reset-discount-link:active {
+            background: #e74c3c;
+        }
+
+        /* 統一五欄位鍵盤網格 */
         .numpad-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -197,11 +215,12 @@
             color: white;
             border: 1px solid #4f546c;
             border-radius: 8px;
-            padding: 12px 0;
+            padding: 12px 0; /* 高度保持不變 */
             font-size: 20px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
+            width: 100%;
         }
 
         .num-btn:active { background: #575c75; }
@@ -210,7 +229,7 @@
             background: #273c75;
             color: #00d2d3;
             border-color: #487eb0;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .num-btn.discount-fixed {
@@ -568,20 +587,11 @@
             cursor: pointer;
         }
 
-        .reset-discount-link {
-            background: transparent;
-            border: none;
-            color: #e74c3c;
-            font-size: 12px;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
         @media (max-width: 600px) {
             html, body { overflow: auto; height: auto; }
             .main-container { flex-direction: column; }
             .key-grid, .key-grid-5 { grid-template-columns: repeat(2, 1fr); }
-            .numpad-grid { grid-template-columns: repeat(4, 1fr); }
+            .numpad-grid { grid-template-columns: repeat(3, 1fr); }
             .change-val { font-size: 60px; }
         }
     </style>
@@ -684,31 +694,35 @@
             <div class="numpad-container">
                 <div class="numpad-header">
                     <span>🔢 數字與折扣鍵盤</span>
-                    <button class="reset-discount-link" onclick="clearDiscount()">清除折扣</button>
+                    <button class="reset-discount-link" onclick="clearDiscount()">清除折扣 ✕</button>
                 </div>
                 <div class="numpad-grid">
+                    <!-- 第一排 -->
                     <button class="num-btn" onclick="pressNum('7')">7</button>
                     <button class="num-btn" onclick="pressNum('8')">8</button>
                     <button class="num-btn" onclick="pressNum('9')">9</button>
                     <button class="num-btn discount-fixed" onclick="applyNumpadFixedDiscount()">按金額扣</button>
                     <button class="num-btn quick" onclick="setExactAmount()">剛好</button>
 
+                    <!-- 第二排 -->
                     <button class="num-btn" onclick="pressNum('4')">4</button>
                     <button class="num-btn" onclick="pressNum('5')">5</button>
                     <button class="num-btn" onclick="pressNum('6')">6</button>
                     <button class="num-btn discount-percent" onclick="applyNumpadPercentDiscount()">按趴數折</button>
                     <button class="num-btn quick" onclick="setQuickPaid(100)">$100</button>
 
+                    <!-- 第三排 -->
                     <button class="num-btn" onclick="pressNum('1')">1</button>
                     <button class="num-btn" onclick="pressNum('2')">2</button>
                     <button class="num-btn" onclick="pressNum('3')">3</button>
                     <button class="num-btn danger" onclick="pressNum('back')">⌫</button>
                     <button class="num-btn quick" onclick="setQuickPaid(500)">$500</button>
 
+                    <!-- 第四排 -->
                     <button class="num-btn" onclick="pressNum('0')">0</button>
                     <button class="num-btn" onclick="pressNum('00')">00</button>
-
-                    <button class="num-btn quick" style="grid-column: span 3;" onclick="setQuickPaid(1000)">$1000 現金結帳</button>
+                    <button class="num-btn" style="visibility: hidden; pointer-events: none;"></button>
+                    <button class="num-btn quick" style="grid-column: span 2;" onclick="setQuickPaid(1000)">$1000 現金結帳</button>
                 </div>
             </div>
         </div>
@@ -796,7 +810,7 @@
 
             <div id="transaction-list"></div>
 
-            <button class="reset-day-btn" onclick="resetDailyData()">⚠️️ 清空當日所有交易資料 (開店重置)</button>
+            <button class="reset-day-btn" onclick="resetDailyData()">⚠ 清空當日所有交易資料 (開店重置)</button>
         </div>
     </div>
 
